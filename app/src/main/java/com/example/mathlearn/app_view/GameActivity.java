@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -80,6 +81,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             editText.setEnabled(false);
             editText.setLongClickable(false);
         }
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
 
         number_editTexts[0].setText(totalOperation.getA().toString());
@@ -92,7 +94,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         number_editTexts[rndIndex].setFocusable(true);
         number_editTexts[rndIndex].setFocusableInTouchMode(true);
         number_editTexts[rndIndex].requestFocus();
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
+
 
         operator_TextView.setText(totalOperation.getStrategy().getSign());
     }
@@ -100,8 +103,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        try {
-            number_editTexts[rndIndex].setText(number_editTexts[rndIndex].getText());
+
+        if (number_editTexts[rndIndex].getText().length()<1)return;
+
+
             if (AnswerCheckKt.chkAnswer(number_editTexts, totalOperation)) {
                 goodAnswerCounter++;
                 if (goodAnswerCounter % 5 == 0) {
@@ -114,12 +119,14 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
             } else {
 
-
+               PlaySoundKt.playDefaultNotiSound(this);
                 AlertDialog badAnswerDialog = ErrorAnswerAl_DialogKt.showBadAnswerDialog(totalOperation, GameActivity.this);
                 badAnswerDialog
                         .setOnDismissListener(new DialogInterface.OnDismissListener() {
                             @Override
                             public void onDismiss(DialogInterface dialogInterface) {
+
+
 
                                 createTotalOperation();
 
@@ -130,29 +137,26 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
 
             }
-        } catch (NumberFormatException err) {
 
-
-            PlaySoundKt.playDefaultNotiSound(this);
-            Toast.makeText(GameActivity.this, err.getMessage(), Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN,0);
+        imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN, 0);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN,0);
+        imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN, 0);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN,0);
+        imm.toggleSoftInput(InputMethodManager.RESULT_HIDDEN, 0);
     }
+
+
 }
